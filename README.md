@@ -30,4 +30,4 @@ python3 fflExtract.py -i <face library archive> <tex count> <mesh count> -t <tex
 
 * `FFLResHigh`, `FFLResMiddle` (Wii U): 317 textures and 857 meshes
 * `AFLResHigh` (Miitomo):317 textures and 857 meshes
-* `AFLResHigh_2_3` (Miitomo): 365 textures and 900 meshes (not confirmed)
+* `AFLResHigh_2_3` (Miitomo): 365 textures and 859 meshes
