@@ -91,12 +91,12 @@ if __name__ == "__main__":
             uvs = shape.get_tex_coords()
             colors = shape.get_vert_colors()
             faces = shape.get_faces()
-            glb.add_verts(verts.byteswap())
-            glb.add_faces(faces.byteswap())
+            glb.add_verts(verts)
+            glb.add_faces(faces)
             if len(uvs) > 0:
-              glb.add_tex_coords(uvs.byteswap())
+              glb.add_tex_coords(uvs)
             if len(colors) > 1:
-              glb.add_vert_colors(colors.byteswap())
+              glb.add_vert_colors(colors)
             glb.save(shape_path)
         print("Done!")
 
