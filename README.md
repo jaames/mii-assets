@@ -2,6 +2,7 @@ Nintendo's Face Library is responsible for rendering Mii characters across numer
 
 Credits:
  - **Jaames** - Python implementation and texture/model data
+ - **[Cholip](https://github.com/choiip)** - Python fixes
  - **[Kinnay](https://github.com/Kinnay)** - reverse-engineering resource archive format
 
 #### fflExtract Usage
@@ -16,9 +17,9 @@ Requirements:
  - [numpy](http://www.numpy.org/)
  - [Pillow](https://pillow.readthedocs.io/en/latest/)
 
-At the moment, Face Library asset archives from Miitomo can still be downloaded from its asset CDN:
- - [`AFLResHigh.dat`](http://download-cdn.miitomo.com/native/20180125111639/android/v2/asset_model_character_mii_AFLResHigh_dat.zip)
- - [`AFLResHigh_2_3.dat`](http://download-cdn.miitomo.com/native/20180125111639/android/v2/asset_model_character_mii_AFLResHigh_2_3_dat.zip)
+At the moment, Face Library asset archives from Miitomo can still be downloaded from archive.org:
+ - [`AFLResHigh.dat`](http://web.archive.org/web/20180502054513/http://download-cdn.miitomo.com/native/20180125111639/android/v2/asset_model_character_mii_AFLResHigh_dat.zip)
+ - [`AFLResHigh_2_3.dat`](http://web.archive.org/web/20180502054513/http://download-cdn.miitomo.com/native/20180125111639/android/v2/asset_model_character_mii_AFLResHigh_2_3_dat.zip)
 
 Usage:
 
