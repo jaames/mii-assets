@@ -30,12 +30,19 @@ class FFLiResourceShape:
     return self.stream.read(length)
 
   def get_verts(self, up="z", forward="y", sideways="x"):
-    verts = np.fromstring(self.get_section(0), dtype=np.dtype([
+    full_verts = np.fromstring(self.get_section(0), dtype=np.dtype([
       (sideways, ">f4"),
       (forward, ">f4"),
       (up, ">f4"),
       ("w", ">f4"),
     ]))
+    
+    verts = np.array(full_verts[[sideways, forward, up]], dtype=np.dtype([
+      (sideways, ">f4"),
+      (forward, ">f4"),
+      (up, ">f4")
+    ]))
+
     return verts
 
   def get_vert_normals(self):

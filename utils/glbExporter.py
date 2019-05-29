@@ -5,6 +5,17 @@ import numpy as np
 from struct import pack
 import json
 
+class NpEncoder(json.JSONEncoder):
+  def default(self, obj):
+      if isinstance(obj, np.integer):
+          return int(obj)
+      elif isinstance(obj, np.floating):
+          return float(obj)
+      elif isinstance(obj, np.ndarray):
+          return obj.tolist()
+      else:
+          return super(NpEncoder, self).default(obj)
+
 class glbExporter:
   def __init__(self):
     self.data = bytes()
@@ -27,7 +38,7 @@ class glbExporter:
       "byteLength": length,
     })
 
-  def add_accessor(self, buffer_view, compontent_type, count, type, min=None, max=None):
+  def add_accessor(self, buffer_view, compontent_type, count, type, min=None, max=None, normalized=False):
     accessor = {
       "bufferView": buffer_view,
       "byteOffset": 0,
@@ -36,73 +47,94 @@ class glbExporter:
       "type": type,
     }
     if min: accessor["min"] = min
-    if max: accessor["min"] = max
+    if max: accessor["max"] = max
+    if normalized: accessor["normalized"] = normalized
     self.json["accessors"].append(accessor)
 
-  def add_verts(self, verts, min=-1000, max=100):
-    self.add_buffer_view(0, len(self.data), verts.nbytes)
+  def add_verts(self, verts):
+    if len(verts) == 0:
+      return
+
+    self.add_buffer_view(0, len(self.data), len(verts)*12)
     self.add_accessor(
       len(self.json["bufferViews"]) - 1, 
       5126, 
-      len(verts), 
+      len(verts),
       "VEC3", 
-      min=min, 
-      max=max
+      min=[verts['x'].min(), verts['y'].min(), verts['z'].min()],
+      max=[verts['x'].max(), verts['y'].max(), verts['z'].max()]
     )
-    self.data += verts.tobytes()
+    self.data += verts.byteswap().tobytes()
     self.primitive["attributes"]["POSITION"] = len(self.json["accessors"]) - 1
 
   def add_tex_coords(self, coords):
-    self.add_buffer_view(0, len(self.data), coords.nbytes)
+    if len(coords) == 0:
+      return
+
+    self.add_buffer_view(0, len(self.data), len(coords)*8)
     self.add_accessor(
       len(self.json["bufferViews"]) - 1, 
       5126, 
       len(coords),
-        "VEC2"
+      "VEC2"
     )
-    self.data += coords.tobytes()
+    self.data += coords.byteswap().tobytes()
     self.primitive["attributes"]["TEXCOORD_0"] = len(self.json["accessors"]) - 1
 
   def add_normals(self, normals):
-    self.add_buffer_view(0, len(self.data), normals.nbytes)
+    if len(normals) == 0:
+      return
+
+    self.add_buffer_view(0, len(self.data), len(normals)*12)
     self.add_accessor(
       len(self.json["bufferViews"]) - 1,
       5126,
-      len(normals),"VEC3"
+      len(normals),
+      "VEC3"
     )
-    self.data += normals.tobytes()
+    self.data += normals.byteswap().tobytes()
     self.primitive["attributes"]["NORMAL"] = len(self.json["accessors"]) - 1
 
   def add_vert_colors(self, colors):
-    self.add_buffer_view(0, len(self.data), colors.nbytes)
+    if len(colors) == 0:
+      return
+
+    self.add_buffer_view(0, len(self.data), len(colors)*4)
     self.add_accessor(
       len(self.json["bufferViews"]) - 1,
       5121,
       len(colors),
-      "VEC4"
+      "VEC4",
+      normalized=True
     )
-    self.data += colors.tobytes()
+    self.data += colors.byteswap().tobytes()
     self.primitive["attributes"]["COLOR_0"] = len(self.json["accessors"]) - 1
 
   def add_faces(self, faces):
+    if len(faces) == 0:
+      return
+
     self.add_buffer_view(0, len(self.data), faces.nbytes)
     self.add_accessor(
       len(self.json["bufferViews"]) - 1,
       5123,
       len(faces) * 3,
-      "SCALAR"
+      "SCALAR",
+      min=[faces.min()],
+      max=[faces.max()]
     )
-    self.data += faces.tobytes()
+    self.data += faces.byteswap().tobytes()
     self.primitive["indices"] = len(self.json["accessors"]) - 1
 
   def save(self, path):
     with open(path, "wb") as f:
       self.json["buffers"][0]["byteLength"] = len(self.data)
-      json_data = json.dumps(self.json)
+      json_data = json.dumps(self.json, cls=NpEncoder)
       # pad json data with spaces
-      json_data += " " * (4 - len(json_data) % 4)
+      json_data += " " * (4 - len(json_data) % 4 if len(json_data) % 4 > 0 else 0)
       # pad binary data with null bytes
-      self.data += bytes((4 - len(self.data) % 4))
+      self.data += bytes((4 - len(self.data) % 4) if len(self.data) % 4 > 0 else 0)
+
       # write fileheader
       f.write(pack("<III", 0x46546C67, 2, len(json_data) + len(self.data) + 28))
       # write json chunk
