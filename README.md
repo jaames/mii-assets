@@ -1,7 +1,6 @@
-> This is no longer maintained and I won't be responding to requests for updates/help/tips/etc, so for the love of all that is holy, please stop asking. 
-People who like Miis tend to smell like feet. In a bad way. Consider whether you really want to be that guy.
+> This is no longer maintained and I won't be responding to requests for updates/help/tips/etc, sorry!
 
-Nintendo's Face Library is responsible for rendering Mii characters across numerous games and devices. This project's goal is to reverse-engineer it and provide utilities for extracting the assets that it uses. Long-term, I'd like to be able to accurately render Miis for ourselves.
+Nintendo's Face Library is responsible for rendering Mii characters across numerous games and devices. This project's goal was to reverse-engineer it and provide utilities for extracting the assets that it uses.
 
 Credits:
  - **Jaames** - Python implementation and texture/model data
